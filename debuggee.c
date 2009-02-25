@@ -14,8 +14,8 @@ int main(int argc, char *argv[]) {
 
 int test() {
   while(1) {
-	printf(" hello world\n");
-	sleep(1);
+    printf(" hello world\n");
+    sleep(1);
   }
 }
 

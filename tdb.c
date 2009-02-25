@@ -38,7 +38,7 @@ int clear_break_point(unsigned long address);
 int check_break_point(unsigned long address);
 
 void print_address_mask(unsigned long bptable_num,
-						struct tdb_breakpoint *bp);
+                        struct tdb_breakpoint *bp);
 
 void enum_bp_list(void);
 void init_bptable(void);
@@ -163,10 +163,10 @@ int show_help(pid_t child, int status, struct user_regs_struct *regs, char **tkp
   int i;
 
   for (i = 0 ; i < numofcmd ; i++) {
-	printf(" %s %s -- %s\n",
-		   cmd_resources[i].command_name,
-		   cmd_resources[i].alias,
-		   cmd_resources[i].guide);
+    printf(" %s %s -- %s\n",
+           cmd_resources[i].command_name,
+           cmd_resources[i].alias,
+           cmd_resources[i].guide);
   }
 
   return TDBG_DONOTHING;  
@@ -180,19 +180,19 @@ int break_point(pid_t child, int status, struct user_regs_struct *regs, char **t
   unsigned long bp_address;
 
   if (tp == NULL) {
-	goto error;
+    goto error;
   }
 
   if (strlen(tp) > 2) {
-	if (tp[0] == '0' && tp[1] == 'x') {
-	  radix = 16;
-	  tp += 2;
-	}
+    if (tp[0] == '0' && tp[1] == 'x') {
+      radix = 16;
+      tp += 2;
+    }
   }
 
   bp_address = strtoul(tp, NULL, radix);
   //  if (errno == ERANGE) {
-  //	goto error;
+  //    goto error;
   //  }
 
 #ifdef __USE_SOFTWARE_BP
@@ -259,9 +259,9 @@ int set_break_point(unsigned long address)
   enable_bp = 1;
   
   if (bp == NULL) {
-	tdb_bp_table[BPTABLE_PDE(address)] = malloc(sizeof(struct tdb_breakpoint) * 1024);
-	bp = tdb_bp_table[BPTABLE_PDE(address)];
-	memset(bp, 0, sizeof(struct tdb_breakpoint) * 1024);
+    tdb_bp_table[BPTABLE_PDE(address)] = malloc(sizeof(struct tdb_breakpoint) * 1024);
+    bp = tdb_bp_table[BPTABLE_PDE(address)];
+    memset(bp, 0, sizeof(struct tdb_breakpoint) * 1024);
   }
 
   set_tdbp_bit(address, &bp[BPTABLE_PTE(address)]);
@@ -274,9 +274,9 @@ int clear_break_point(unsigned long address)
   struct tdb_breakpoint *bp = tdb_bp_table[BPTABLE_PDE(address)];
   
   if (bp == NULL) {
-	return 0;
+    return 0;
   } else {
-	clear_tdbp_bit(address, &bp[BPTABLE_PTE(address)]);
+    clear_tdbp_bit(address, &bp[BPTABLE_PTE(address)]);
   }
   
   return 1;
@@ -286,27 +286,27 @@ int check_break_point(unsigned long address)
 {
   struct tdb_breakpoint *bp = tdb_bp_table[BPTABLE_PDE(address)];
   if (bp == NULL) {
-	return 0;
+    return 0;
   }
   return check_tdbp_bit(address, &bp[BPTABLE_PTE(address)]);
 }
 
 void print_address_mask(unsigned long bptable_num,
-						struct tdb_breakpoint *bp)
+                        struct tdb_breakpoint *bp)
 {
   int i, j;
   unsigned long bp_address, mask;
   
-  for (i = 0 ; i < (0x1000 / sizeof(unsigned long)) ; i++) {	
-	if (bp->address_mask[i]) {
-	  mask = bp->address_mask[i];	  
-	  for (j = 0 ; j < (sizeof(unsigned long) * 8) ; j++) {		
-		if ((mask >> j) & 1) {
-		  bp_address = bptable_num | (sizeof(unsigned long) * i + j);
-		  printf(" 0x%08lx\n", bp_address);
-		}
-	  }
-	}
+  for (i = 0 ; i < (0x1000 / sizeof(unsigned long)) ; i++) {    
+    if (bp->address_mask[i]) {
+      mask = bp->address_mask[i];     
+      for (j = 0 ; j < (sizeof(unsigned long) * 8) ; j++) {     
+        if ((mask >> j) & 1) {
+          bp_address = bptable_num | (sizeof(unsigned long) * i + j);
+          printf(" 0x%08lx\n", bp_address);
+        }
+      }
+    }
   }
 }
 
@@ -314,13 +314,13 @@ void enum_bp_list(void)
 {
   int i = 0;
   for ( ; i < bpte_of_num ; i++ ) {
-	if (tdb_bp_table[i] != NULL) {	  
-	  struct tdb_breakpoint *bp = tdb_bp_table[i];
-	  int j = 0;	  
-	  for ( ; j < 1024 ; j++ ) {
-		print_address_mask(PAGE_NUM(i, j), &bp[j]);
-	  }
-	}
+    if (tdb_bp_table[i] != NULL) {    
+      struct tdb_breakpoint *bp = tdb_bp_table[i];
+      int j = 0;      
+      for ( ; j < 1024 ; j++ ) {
+        print_address_mask(PAGE_NUM(i, j), &bp[j]);
+      }
+    }
   }
 }
 
@@ -329,11 +329,11 @@ void init_bptable(void)
   int i = 0;
 
   for ( ; i < bpte_of_num ; i++ ) {
-	if (tdb_bp_table[i] != NULL) {
-	  free(tdb_bp_table[i]);
-	} else {
-	  tdb_bp_table[i] = NULL;
-	}
+    if (tdb_bp_table[i] != NULL) {
+      free(tdb_bp_table[i]);
+    } else {
+      tdb_bp_table[i] = NULL;
+    }
   }
 
   return;
@@ -344,9 +344,9 @@ void free_all_bptable(void)
   int i = 0;
 
   for ( ; i < bpte_of_num ; i++ ) {
-	if (tdb_bp_table[i] != NULL) {
-	  free(tdb_bp_table[i]);
-	}
+    if (tdb_bp_table[i] != NULL) {
+      free(tdb_bp_table[i]);
+    }
   }
 
   return;
@@ -361,7 +361,7 @@ static int enable_bp = 0;
 static char dbg_code[] = {0xcc};
 
 int inject_int3(pid_t child, unsigned long addr,
-				char *backup_code, int backupcode_size)
+                char *backup_code, int backupcode_size)
 {
 
   readdata(child, addr, backup_code, backupcode_size);
@@ -377,22 +377,22 @@ int set_break_point(pid_t child, unsigned long address)
   enable_bp = 1;
   
   for (i = 0 ; i < bpte_of_num ; i++) {
-	if (tdb_bp_table[i].valid == -1) {
-	  tdb_bp_table[i].valid = 1;
-	  tdb_bp_table[i].address = address;
-	  tdb_bp_table[i].backupcode.val = 0;
-	  tdb_bp_table[i].backupcode_size = sizeof(dbg_code);
-	  
-	  inject_int3(child, address,
-				  tdb_bp_table[i].backupcode.bytes,
-				  tdb_bp_table[i].backupcode_size);
+    if (tdb_bp_table[i].valid == -1) {
+      tdb_bp_table[i].valid = 1;
+      tdb_bp_table[i].address = address;
+      tdb_bp_table[i].backupcode.val = 0;
+      tdb_bp_table[i].backupcode_size = sizeof(dbg_code);
+      
+      inject_int3(child, address,
+                  tdb_bp_table[i].backupcode.bytes,
+                  tdb_bp_table[i].backupcode_size);
 
-	  printf("Setting break point 0x%08lx -- 0x%08lx\n",
-			 tdb_bp_table[i].address,
-			 tdb_bp_table[i].backupcode.val);
-	  
-	  return i;
-	}
+      printf("Setting break point 0x%08lx -- 0x%08lx\n",
+             tdb_bp_table[i].address,
+             tdb_bp_table[i].backupcode.val);
+      
+      return i;
+    }
   }
   return -1;
 }
@@ -400,11 +400,11 @@ int set_break_point(pid_t child, unsigned long address)
 void clear_break_point(pid_t child, int bp_num)
 {
   if (tdb_bp_table[bp_num].valid > 0) {
-	writedata(child,
-			  tdb_bp_table[bp_num].address,
-			  tdb_bp_table[bp_num].backupcode.bytes,
-			  tdb_bp_table[bp_num].backupcode_size);
-	tdb_bp_table[bp_num].valid = -1;
+    writedata(child,
+              tdb_bp_table[bp_num].address,
+              tdb_bp_table[bp_num].backupcode.bytes,
+              tdb_bp_table[bp_num].backupcode_size);
+    tdb_bp_table[bp_num].valid = -1;
   }
 }
 
@@ -413,10 +413,10 @@ struct tdb_breakpoint *check_break_point(unsigned long address)
   int i;
   
   for (i = 0 ; i < bpte_of_num ; i++) {
-	if (tdb_bp_table[i].valid > 0 &&
-		tdb_bp_table[i].address == address) {
-	  return &tdb_bp_table[i];
-	}
+    if (tdb_bp_table[i].valid > 0 &&
+        tdb_bp_table[i].address == address) {
+      return &tdb_bp_table[i];
+    }
   }
 
   return NULL;
@@ -426,9 +426,9 @@ void enum_bp_list(void)
 {
   int i;
   for (i = 0 ; i < bpte_of_num ; i++) {
-	if (tdb_bp_table[i].valid > 0) {
-	  printf(" [%d] -- 0x%08lx\n", i, tdb_bp_table[i].address);
-	}
+    if (tdb_bp_table[i].valid > 0) {
+      printf(" [%d] -- 0x%08lx\n", i, tdb_bp_table[i].address);
+    }
   }
 }
 
@@ -436,13 +436,13 @@ void init_bptable(pid_t child)
 {
   int i;
   for (i = 0 ; i < bpte_of_num ; i++ ) {
-	if (tdb_bp_table[i].valid > 0) {
-	  writedata(child,
-				tdb_bp_table[i].address,
-				tdb_bp_table[i].backupcode.bytes,
-				tdb_bp_table[i].backupcode_size);
-	}
-	tdb_bp_table[i].valid = -1;
+    if (tdb_bp_table[i].valid > 0) {
+      writedata(child,
+                tdb_bp_table[i].address,
+                tdb_bp_table[i].backupcode.bytes,
+                tdb_bp_table[i].backupcode_size);
+    }
+    tdb_bp_table[i].valid = -1;
   }
   
   enable_bp = 0;
@@ -459,20 +459,20 @@ void restore_breakpoint(pid_t child, int bp_num)
 {
 
   if (bp_num < 0) {
-	return;
+    return;
   }
   
   if (tdb_bp_table[bp_num].valid > 0) {
-	inject_int3(child, tdb_bp_table[bp_num].address,
-				tdb_bp_table[bp_num].backupcode.bytes,
-				tdb_bp_table[bp_num].backupcode_size);
+    inject_int3(child, tdb_bp_table[bp_num].address,
+                tdb_bp_table[bp_num].backupcode.bytes,
+                tdb_bp_table[bp_num].backupcode_size);
   }
 }
 
 void restore_inst(pid_t child, struct tdb_breakpoint *bp)
 {
   writedata(child, bp->address, bp->backupcode.bytes,
-			bp->backupcode_size);
+            bp->backupcode_size);
 }
 #endif
 
@@ -484,16 +484,16 @@ void readdata(pid_t child, unsigned long addr, char *str, int len)
   union u_data data;
 
   while (i < j) {
-	data.val = ptrace(PTRACE_PEEKDATA, child, addr + i * 4, NULL);
-	memcpy(laddr, data.bytes, long_size);
-	++i;
-	laddr += long_size;
+    data.val = ptrace(PTRACE_PEEKDATA, child, addr + i * 4, NULL);
+    memcpy(laddr, data.bytes, long_size);
+    ++i;
+    laddr += long_size;
   }
 
   j = len % long_size;
   if (j != 0) {
-	data.val = ptrace(PTRACE_PEEKDATA, child, addr + i * 4, NULL);
-	memcpy(laddr, data.bytes, j);
+    data.val = ptrace(PTRACE_PEEKDATA, child, addr + i * 4, NULL);
+    memcpy(laddr, data.bytes, j);
   }
 
   str[len] = '\0';
@@ -508,18 +508,18 @@ void writedata(pid_t child, unsigned long addr, char *str, int len)
   union u_data data;
 
   while (i < j) {
-	memcpy(data.bytes, laddr, long_size);
-	ptrace(PTRACE_POKEDATA, child, addr + i * 4, data.val);
-	++i;
-	laddr += long_size;
+    memcpy(data.bytes, laddr, long_size);
+    ptrace(PTRACE_POKEDATA, child, addr + i * 4, data.val);
+    ++i;
+    laddr += long_size;
   }
 
   j = len % long_size;
   if (j != 0) {
-	union u_data mask;
-	mask.val = ptrace(PTRACE_PEEKDATA, child, addr + i * 4, NULL);
-	memcpy(mask.bytes, laddr, j);
-	ptrace(PTRACE_POKEDATA, child, addr + i * 4, mask.val);
+    union u_data mask;
+    mask.val = ptrace(PTRACE_PEEKDATA, child, addr + i * 4, NULL);
+    memcpy(mask.bytes, laddr, j);
+    ptrace(PTRACE_POKEDATA, child, addr + i * 4, mask.val);
   }
 }
 
@@ -537,11 +537,11 @@ int x86_dump_asm(pid_t child, unsigned long address, int view)
   
   size = x86_disasm(buf, sizeof(buf), 0, pos, &insn);
   if (size) {
-	x86_format_insn(&insn, line, CMDLINE_LEN, intel_syntax);
-	if (view) {
-	  printf("<0x%08lx> - %s\n", address, line);
-	}
-	pos += size;
+    x86_format_insn(&insn, line, CMDLINE_LEN, intel_syntax);
+    if (view) {
+      printf("<0x%08lx> - %s\n", address, line);
+    }
+    pos += size;
   }
 
   x86_cleanup();
@@ -556,36 +556,36 @@ int dbg_repl(pid_t child, int status, struct user_regs_struct *regs)
   int ret, i;
   char *saveptr;
   
-  do {	
-	ret = TDBG_DONOTHING;
-	
-	if (fgets(cmdline, CMDLINE_LEN, stdin) == NULL) {
-	  perror("fgets");
-	  return 0;
-	}
-	
-	if (cmdline[0] == '\n') {
-	  continue;
-	}
-	
-	cmdline[strlen(cmdline)-1] = '\0';
-	tp = strtok_r(cmdline, delim, &saveptr);
+  do {  
+    ret = TDBG_DONOTHING;
+    
+    if (fgets(cmdline, CMDLINE_LEN, stdin) == NULL) {
+      perror("fgets");
+      return 0;
+    }
+    
+    if (cmdline[0] == '\n') {
+      continue;
+    }
+    
+    cmdline[strlen(cmdline)-1] = '\0';
+    tp = strtok_r(cmdline, delim, &saveptr);
 
-	for (i = 0 ; i < numofcmd ; i++) {
-	  char *cmd = cmd_resources[i].command_name;
-	  char *alias = cmd_resources[i].alias;
-	  
-	  if (strcmp(cmd, tp) == 0 || strcmp(alias, tp) == 0) {
-		printf("Command: %s\n", tp);
-		ret = cmd_resources[i].func(child, status, regs, &saveptr);
-		break;
-	  }
-	}
+    for (i = 0 ; i < numofcmd ; i++) {
+      char *cmd = cmd_resources[i].command_name;
+      char *alias = cmd_resources[i].alias;
+      
+      if (strcmp(cmd, tp) == 0 || strcmp(alias, tp) == 0) {
+        printf("Command: %s\n", tp);
+        ret = cmd_resources[i].func(child, status, regs, &saveptr);
+        break;
+      }
+    }
 
-	if (i >= numofcmd) {
-	  printf("Can't recognize command: %s\n", cmdline);
-	}
-	
+    if (i >= numofcmd) {
+      printf("Can't recognize command: %s\n", cmdline);
+    }
+    
   } while (ret == TDBG_DONOTHING);
   
   return ret;
@@ -601,22 +601,22 @@ int set_next_action(pid_t child, int action_type)
   switch (action_type) {
   case TDBG_CONTINUE:
 #ifdef __USE_SOFTWARE_BP
-	ptrace(PTRACE_SINGLESTEP, child, NULL, NULL);
+    ptrace(PTRACE_SINGLESTEP, child, NULL, NULL);
 #endif
 #ifdef __USE_HARDWARE_BP
-	ptrace(PTRACE_CONT, child, NULL, NULL);
+    ptrace(PTRACE_CONT, child, NULL, NULL);
 #endif
-	break;
-	
+    break;
+    
   case TDBG_STEP:
-	ptrace(PTRACE_SINGLESTEP, child, NULL, NULL);
-	break;
-	
+    ptrace(PTRACE_SINGLESTEP, child, NULL, NULL);
+    break;
+    
   case TDBG_EXIT:
-	break;
-	
+    break;
+    
   default:
-	break;	
+    break;  
   }
   
   return 0;
@@ -632,108 +632,108 @@ void execute_debugger(void)
   printf("In debugger process %ld\n", (long)getpid());
 
 /*   if (signal(SIGCHLD, signal_handler) == SIG_ERR) { */
-/* 	perror("signal"); */
-/* 	exit(-1); */
+/*  perror("signal"); */
+/*  exit(-1); */
 /*   } */
 
   do {
-	int need_console = 0;
-	
-	static int inst_size = 0;
+    int need_console = 0;
+    
+    static int inst_size = 0;
 #ifdef __USE_HARDWARE_BP
-	struct tdb_breakpoint *bp = NULL;
-	static struct tdb_breakpoint *reset_bp = NULL;
-	static struct tdb_breakpoint restore_bp;
-	static int need_restore = 0;
+    struct tdb_breakpoint *bp = NULL;
+    static struct tdb_breakpoint *reset_bp = NULL;
+    static struct tdb_breakpoint restore_bp;
+    static int need_restore = 0;
 #endif
 
-	child = wait(&status);
-	ptrace(PTRACE_GETREGS, child, NULL, &regs);
-	
-	if (WIFSTOPPED(status)) {
-	  if (WSTOPSIG(status) == SIGTRAP) {
-		need_console = (next_action == TDBG_STEP) ? 1 : 0;
+    child = wait(&status);
+    ptrace(PTRACE_GETREGS, child, NULL, &regs);
+    
+    if (WIFSTOPPED(status)) {
+      if (WSTOPSIG(status) == SIGTRAP) {
+        need_console = (next_action == TDBG_STEP) ? 1 : 0;
 #ifdef __USE_SOFTWARE_BP
-		if (enable_bp && check_break_point(regs.eip)) {
-		  printf("Hit break point (eip: 0x%08lx)\n", regs.eip);
-		  need_console = 1;
-		}
+        if (enable_bp && check_break_point(regs.eip)) {
+          printf("Hit break point (eip: 0x%08lx)\n", regs.eip);
+          need_console = 1;
+        }
 #endif
 #ifdef __USE_HARDWARE_BP
-		if (enable_bp) {
-		  need_console = 1;
-		  regs.eip -= 1; /* int3 */
-		  bp = check_break_point(regs.eip);
-		  
-		  if (bp != NULL) {
-			printf("Hit break point (eip: 0x%08lx)\n", regs.eip);
-			/* write back old instruction */
-			restore_inst(child, bp);
-			
-			reset_bp = bp;
-			need_restore = 1;
-		  } else if (need_restore && restore_bp.valid) {
-			/* ブレークポイント復帰用のブレークポイントを削除 */
-			restore_inst(child, &restore_bp);
+        if (enable_bp) {
+          need_console = 1;
+          regs.eip -= 1; /* int3 */
+          bp = check_break_point(regs.eip);
+          
+          if (bp != NULL) {
+            printf("Hit break point (eip: 0x%08lx)\n", regs.eip);
+            /* write back old instruction */
+            restore_inst(child, bp);
+            
+            reset_bp = bp;
+            need_restore = 1;
+          } else if (need_restore && restore_bp.valid) {
+            /* ブレークポイント復帰用のブレークポイントを削除 */
+            restore_inst(child, &restore_bp);
 
-			/* ブレークポイント復帰 */
-			inject_int3(child,
-						reset_bp->address,
-						reset_bp->backupcode.bytes,
-						reset_bp->backupcode_size);
-			
-			restore_bp.valid = -1;			
-			need_console = need_restore = 0;
-			inst_size = x86_dump_asm(child, regs.eip, 0);
-		  }
-		}
+            /* ブレークポイント復帰 */
+            inject_int3(child,
+                        reset_bp->address,
+                        reset_bp->backupcode.bytes,
+                        reset_bp->backupcode_size);
+            
+            restore_bp.valid = -1;          
+            need_console = need_restore = 0;
+            inst_size = x86_dump_asm(child, regs.eip, 0);
+          }
+        }
 #endif
-	  } else if (WSTOPSIG(status) == SIGSEGV) {
-		printf("Segmentation fault\n");
-	  } else {
-		printf("debuggee has stopped due to signal %d\n", WSTOPSIG(status));
-	  }
-	}
-	
-	if (WIFSIGNALED(status)) {
-	  printf("debuggee %d received signal %d\n", (int)child, WTERMSIG(status));
-	  need_console = 1;
-	}
+      } else if (WSTOPSIG(status) == SIGSEGV) {
+        printf("Segmentation fault\n");
+      } else {
+        printf("debuggee has stopped due to signal %d\n", WSTOPSIG(status));
+      }
+    }
+    
+    if (WIFSIGNALED(status)) {
+      printf("debuggee %d received signal %d\n", (int)child, WTERMSIG(status));
+      need_console = 1;
+    }
 
-	if (need_console) {
-	  printf("The process stopped, putting back debuggee\n");
-	  printf("Enter <help> to show manual\n");
-	  inst_size = x86_dump_asm(child, regs.eip, 1);
-	  next_action = dbg_repl(child, status, &regs);
-	} else {
-	  next_action = TDBG_CONTINUE;
-	}
+    if (need_console) {
+      printf("The process stopped, putting back debuggee\n");
+      printf("Enter <help> to show manual\n");
+      inst_size = x86_dump_asm(child, regs.eip, 1);
+      next_action = dbg_repl(child, status, &regs);
+    } else {
+      next_action = TDBG_CONTINUE;
+    }
 
 #ifdef __USE_HARDWARE_BP
-	if (need_restore) {
-	  /* ブレークポイント復帰用のブレークポイントを設定 */
-	  restore_bp.valid = 1;
-	  restore_bp.address = regs.eip + inst_size;
-	  restore_bp.backupcode.val = 0;
-	  restore_bp.backupcode_size = sizeof(dbg_code);
-	  
-	  inject_int3(child,
-				  restore_bp.address,
-				  restore_bp.backupcode.bytes,
-				  restore_bp.backupcode_size);
-	}
+    if (need_restore) {
+      /* ブレークポイント復帰用のブレークポイントを設定 */
+      restore_bp.valid = 1;
+      restore_bp.address = regs.eip + inst_size;
+      restore_bp.backupcode.val = 0;
+      restore_bp.backupcode_size = sizeof(dbg_code);
+      
+      inject_int3(child,
+                  restore_bp.address,
+                  restore_bp.backupcode.bytes,
+                  restore_bp.backupcode_size);
+    }
 #endif
 
-	ptrace(PTRACE_SETREGS, child, NULL, &regs);
+    ptrace(PTRACE_SETREGS, child, NULL, &regs);
 
-	/* set next action */
-	set_next_action(child, next_action);
-	
+    /* set next action */
+    set_next_action(child, next_action);
+    
   } while (!WIFEXITED(status));
 
   if (WIFEXITED(status)) {
-	int exit_status = WEXITSTATUS(status);
-	printf("Program exited with status (%d)\n", exit_status);
+    int exit_status = WEXITSTATUS(status);
+    printf("Program exited with status (%d)\n", exit_status);
   }
 
   return;
@@ -747,8 +747,8 @@ void execute_debuggee(void)
   printf("In debuggie process %ld\n", (long)getpid());
 
   if (ptrace(PTRACE_TRACEME, 0, NULL, NULL)) {
-	perror("ptrace");
-	return;
+    perror("ptrace");
+    return;
   }
 
   execve("./debuggee", argv, envp);
@@ -803,30 +803,30 @@ int main(int argc, char *argv[])
   
   child = fork();
   if (child == 0) {
-	/* child process */
-	execute_debuggee();
+    /* child process */
+    execute_debuggee();
   } else if (child > 0) {
-	
+    
 #ifdef __USE_SOFTWARE_BP
-	init_bptable();
+    init_bptable();
 #endif
 #ifdef __USE_HARDWARE_BP
-	init_bptable(child);
+    init_bptable(child);
 #endif
-	
-	/* debugger process */
-	execute_debugger();
-	
+    
+    /* debugger process */
+    execute_debugger();
+    
 #ifdef __USE_SOFTWARE_BP
-	free_all_bptable();
+    free_all_bptable();
 #endif
 #ifdef __USE_HARDWARE_BP
-	free_all_bptable(child);
+    free_all_bptable(child);
 #endif
-	
+    
   } else {
-	perror("fork");
-	return -1;
+    perror("fork");
+    return -1;
   }
   
   return 0;
